@@ -1,0 +1,45 @@
+<div class="container p-4">
+    <div class="row">
+        {{#each Usuarios}}
+                <div class="card-body">
+                    <table class="table table-bordered table-striped text-center mt-4">
+                        <thead>
+                            <tr class="big-primary text-black">
+                               <th scope="col" >id</th>
+                               <th scope="col" >Nombre Cliente</th> 
+                               <th scope="col" >Nombre Usuario</th>
+                               <th scope="col" >Numero Telefono</th>
+                               <th scope="col" >Tipo</th> 
+                               <th scope="col"  >Direccion</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                    
+                            <tr>
+                                <td >{{idUsuarios}}</td>
+                                <td >{{NombreCliente}}</td>
+                                <td >{{NombreUsuario}}</td>
+                                <td >{{NumeroTelefono}}</td>
+                                <td >{{Tipo}}</td>
+                                <td >{{Direccion}}</td>
+                                <td> <a class="btn btn-danger" href="/Usuarios/delete/{{idUsuarios}}">Delete User</a>
+                                     <a class="btn btn-secondary" href="/Usuarios/edit/{{idUsuarios}}">Edit</a>
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                        </table>
+                    </a>
+                </div>
+            </div>
+        </div>
+        {{else}}
+        <div class="col-md-4 mx-auto">
+            <div class="card card-body text-center">
+                <p>There are not Usuarios saved yet.</p>
+                <a href="/Usuarios/add">Create One!</a>
+            </div>
+        </div>
+        {{/each}}
+    </div>
+</div>
