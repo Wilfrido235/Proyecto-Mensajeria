@@ -8,12 +8,21 @@ const passport = require('passport');
 const flash = require('connect-flash');
 const MySQLStore = require('express-mysql-session')(session);
 const bodyParser = require('body-parser');
+const multer = require('multer');
 
 const { database } = require('./keys');
+
 
 // Intializations
 const app = express();
 require('./lib/passport');
+
+const storage = multer.diskStorage({
+  destination:path.join(__dirname,'public/img'),
+  filename: (req,file,cb)=>{
+       cb(null,file.originalname);
+  }
+});
 
 // Settings
 app.set('port', process.env.PORT || 4000);
@@ -25,6 +34,7 @@ app.engine('.hbs', exphbs({
   extname: '.hbs',
   helpers: require('./lib/handlebars')
 }))
+
 app.set('view engine', '.hbs');
 
 // Middlewares
@@ -42,6 +52,14 @@ app.use(flash());
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(validator());
+app.use(multer({
+  storage,
+  dest: path.join(__dirname,'public/img'),
+  fileFilter: (req,file,cb) =>{
+    const filetypes =  /jpeg|jpg|png/;
+    const extname = filetypes.test(file.mimetype);
+  }
+}).single('image'));
 
 // Global variables
 app.use((req, res, next) => {
@@ -55,6 +73,7 @@ app.use((req, res, next) => {
 app.use(require('./routes/index'));
 app.use(require('./routes/authentication'));
 app.use('/Usuarios', require('./routes/links'));
+app.use('/Clientes', require('./routes/links'));
 
 // Public
 app.use(express.static(path.join(__dirname, 'public')));

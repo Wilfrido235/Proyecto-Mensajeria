@@ -56,8 +56,46 @@ passport.use('local.signin', new LocalStrategy({
     return done(null, false, req.flash('message', 'El usuario no existe.'));
   }
 }));
+
+passport.use('local.Cliadd', new LocalStrategy({
+  usernameField: 'NombreUsuario',
+  passwordField: 'Password',
+  passReqToCallback: true
+}, async (req, NombreUsuario, Password, done) => {
+
+  const {NombreCliente} = req.body;
+  const {Tipo} = req.body;
+  const {Direccion} = req.body;
+  const {NumeroTelefono} = req.body;
+  const {Ruc} = req.body;
+  const {Correo} = req.body;
+  const {FechaNacimiento} = req.body;
+
+  let newUser = {
+    NombreCliente,
+    Tipo,
+    Direccion,
+    NumeroTelefono,
+    Ruc,
+    Correo,
+    FechaNacimiento,
+    NombreUsuario,
+    Password
+  };
+  console.log(req.body);
+  newUser.Password = await helpers.encryptPassword(Password);
+    // Saving in the Database
+    const result = await pool.query('INSERT INTO clientes SET ? ', newUser);
+    newUser.idClientes = result.insertId;
+    return done(null, newUser);
+  }));
+
 passport.serializeUser((user, done) => {
   done(null, user.idUsuarios);
+});
+
+passport.serializeUser((user, done) => {
+  done(null, user.idClientes);
 });
 
 // passport.deserializeUser(async(idUsuarios, done)=> {
@@ -74,6 +112,11 @@ passport.serializeUser((user, done) => {
 
 passport.deserializeUser(async (idUsuarios, done) => {
   const rows = await pool.query('SELECT * FROM database_sms.usuarios WHERE idUsuarios = ?', [idUsuarios]);
+  done(null, rows[0]);
+});
+
+passport.deserializeUser(async (idClientes, done) => {
+  const rows = await pool.query('SELECT * FROM database_sms.clientes WHERE idClientes = ?', [idClientes]);
   done(null, rows[0]);
 });
 

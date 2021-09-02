@@ -1,4 +1,5 @@
 const express = require('express');
+const multer = require('multer');
 const router = express.Router();
 
 const passport = require('passport');
@@ -33,7 +34,7 @@ router.post('/signin', (req, res, next) => {
     failureRedirect: '/signin',
     failureFlash: true
   })(req, res, next);
-  
+
 });
 
 router.get('/logout', (req, res) => {
@@ -44,29 +45,48 @@ router.get('/logout', (req, res) => {
 router.get('/profile', isLoggedIn, (req, res) => {
   res.render('profile');
 });
-// //guardar una imagen 
-// router.post('profileimg',async(req,res)=>{
-//   const{nimetype,filename,path}=req.file;
-//   console.log("las"+nimetype,filename,path)
-//   // limite1
-//   await pool.query("SELECT idUusario FROM usuarios ORDER BY idUsuarios desc;",(err,rows,filds)=>{
-//     if(!err){
-//       let idUltimoUsr;
-//       for(const[p,v]of Object.entries(rows[0])){
-//         idUltimoUsr=v;
-//       }
-//       pool.query("INSERT INTO 'database_sms','FotosUsuario'('idUusuario','NombreFoto','Data','Type')VALUES('"+[idUltimoUsr]+"','
-//         if(!err){
-//           req.flash
-//           res.send
-//           console.log('Se guardo la image correctamente')
-//         }else{
-//           console.log("No se guardo la image correctamente"+err)
-//         }
-//     })
-//   }else{
-//     console.log("Error al obteber el ultimo usuario para asignarle la imagen"+err)
-//   }
-// });
+
+router.post('/imagenes', (req, res) => {
+  console.log(req.file);
+  res.send('Imagen subida');
+});
+
+
+//guardar una imagen 
+router.post('imagenes', async (req, res) => {
+  const { nimetype, filename, path } = req.file;
+  console.log("las" + nimetype, filename, path)
+  // limite1
+  await pool.query("SELECT idUusario FROM usuarios ORDER BY idUsuarios desc;", (err, rows, filds) => {
+    if (!err) {
+      let idUltimoUsr;
+      for (const [p, v] of Object.entries(rows[0])) {
+        idUltimoUsr = v;
+      }
+      pool.query("INSERT INTO 'database_sms','FotosUsuario'('idUusuario','NombreFoto','Data','Type')VALUES('" + [idUltimoUsr] + "'", (err, rows) => {
+        if (!err) {
+          req.flash
+          res.send
+          console.log('Se guardo la image correctamente')
+        } else {
+          console.log("No se guardo la image correctamente" + err)
+        }
+      })
+    } else {
+      console.log("Error al obteber el ultimo usuario para asignarle la imagen" + err)
+    }
+  })
+});
+
+// add Cliente
+router.get('/Cliadd', (req, res) => {
+  res.render('Clientes/Cliadd');
+});
+
+router.post('/Cliadd', passport.authenticate('local.Cliadd', {
+  successRedirect: '/profile',
+  failureRedirect: '/Cliadd',
+  failureFlash: true
+}));
 
 module.exports = router;
